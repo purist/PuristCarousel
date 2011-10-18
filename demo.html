@@ -71,7 +71,7 @@ $(function(){
 		animation_duration: 750,
 		onCellClick: function( cell ){ },
 		onAnimationBegin: function( from_cell, to_cell ) { },
-		onAnimationComplete: function( prev_cell, current_cell ) { },
+		onAnimationComplete: function( prev_cell, current_cell ) { console.log( data[current_cell.model_index].label )},
 		onMouseover: function( cell ) { },
 		onMouseout: function( cell ) { }
 	});
