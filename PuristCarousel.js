@@ -67,7 +67,7 @@ IPuristCarousel = Class.extend({
   
   next: function() {},
   prev: function() {},
-  animateToCell: function( cell, on_animation_complete ) {}
+  animateToCellFromClick: function( cell, on_animation_complete ) {}
 });
 
 PuristCarousel = IPuristCarousel.extend({
@@ -154,15 +154,14 @@ PuristCarousel = IPuristCarousel.extend({
   
   next: function() {
     var i = this.current_cell.getModelIndex();
-    var next_i = (i+this.options.slide_factor)%this.cells.length;
-    this.animateToCell( this.cells[next_i], function(){});
+    var next_i = purist_modulus( i+this.options.slide_factor, this.cells.length) ;
+    this.animateToCellFromClick( this.cells[next_i], function(){});
   },
   
   prev: function() {
     var i = this.current_cell.getModelIndex();
-    var safe_i = i + this.cells.length;
-    var prev_i = (safe_i-this.options.slide_factor)%this.cells.length;
-    this.animateToCell( this.cells[prev_i], function(){});
+    var prev_i = purist_modulus( i-this.options.slide_factor, this.cells.length) ;
+    this.animateToCellFromClick( this.cells[prev_i], function(){});
   },
   
   // shift: # of cells that while eventually shift. render prepares us for the shift.
@@ -193,27 +192,21 @@ PuristCarousel = IPuristCarousel.extend({
     
     var displayIndexToModelIndex = function(x) { return purist_modulus( ( current_model_index - cells_left + x ), cells_length ); };
     
-    var output = "";
     this.displaying_cells = [];
     for( var i=0; i<total_rendered; i++ )
     {
       var model_index = displayIndexToModelIndex(i);
-      //console.log( -6 % 10 );
-      output += model_index + ", ";
       var model = this.cells[ model_index ];
       var clone = model.clone();
       model.setDisplayIndex( i );
       clone.setDisplayIndex( i );
-      //model.clone_ref = clone;
       this.displaying_cells.push( clone ); 
       this.cells_container.append( clone.render() );
     }
-    //console.log( output );
     
     this.cells_container_x = cells_container_x;
     this.cells_container.css( 'left', cells_container_x + "px" ); 
     this.cells_container.width( total_rendered * this.options.cell_width );
-    
   },
   
   // using display indexes
