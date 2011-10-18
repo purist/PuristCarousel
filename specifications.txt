@@ -1,0 +1,95 @@
+PUMA Landing Page Carousel Gallery
+
+Carousel Gallery: display N images in order horizontally but within a view port that displays only a subset of the images while the rest are hidden from view. The first image starts at the 0 position and if the set slides left, the first image while move out of the view port on the left and hidden images at the right will appear from the right. When the end is reached the first image should appear from the right, creating a never ending cycle. When sliding to the right, the same behavior is maintained in reverse.
+
+Terminology
+
+cell: rectangular area of arbitrary HTML
+viewport: visible area that displays for the user
+cells-container: horizontal arrangement of cells
+slide-factor: number of cells to move by per click of nav-button
+auto-slide-factor: number of cells to move during a time based automatic slide
+nav-button: one for each right and left, triggers a slide 
+focus-area: area within the viewport that defines the current active-cell
+active-cell: cell within the focus-area
+auto-cycle: behavior: cell-container slides automatically on a timer
+
+Requirements
+
+-support arbitrary HTML, not just images, thus cells of arbitrary HTML
+-cells are all the same size
+-view port can be any size.
+-top left corner of cell-container is positioned at top left corner of viewport
+-any part of cell-container that exists outside the viewport is hidden
+-cells can be dynamically added
+-when a cell is clicked on, it becomes the active-cell and the cell-container slides 
+ 	so that the active-cell is in the focus-area
+-focus-area has the same dimensions as a cell
+-focus-area x position does not need to be a multiple of the cell width, and thus the 
+	extreme left or right edge of the viewport may contain partial cells.
+-auto-cycle feature allows the cells to slide automatically on a timer and with configurable 
+	direction
+-constructed via jQuery function to make any div element a viewport and build a carousel 
+	inside of it. div should contain a set of child divs, once for each cell. each child div 
+	holds the cell content
+		<div>
+			<div>child1</div>
+			<div>child2</div>
+			<div>child3</div>
+			<div>child4</div>
+		</div>
+
+API Requirements
+ 
+-Options Hash
+		cell_container_width: int,
+		cell_container_height: int,
+		cell_width: int
+		cell_height: int
+		slide_factor: int
+		auto-cycle: boolean
+		pause_auto_cycle_on_hover: boolean
+		focus_cell_on_click: boolean
+		
+		// callbacks
+		onCellClick: function( int, el )
+		onAnimationBegin: function( int, el )
+		onAnimationComplete: function( int, el )
+		
+-API function that allows a developer to trigger a slide to the left. returns new active-cell
+	function slideLeft();
+
+-API function that allows a developer to trigger a slide to the right. returns new active-cell
+	function slideRight();
+
+-API function to activate or deactivate the auto-cycle behavior. returns void
+	function autoCycleEnabled( boolean );
+		
+-API function to pause and resume the auto cycle. returns boolean to indicate new state
+	function startStopAnimation();
+
+-API function to dynamically add cells
+		function addCell( html );
+
+-API function to dynamically remove cells. if param is an int, it removes by index, if param
+		is a string, it removes via jquery selector in the context of the viewport
+		function removeCell( i_or_s );
+				
+# -API function that allows a developer to assign the cellFactory function where the cellFactory 
+# 	function is a simple javascript function with one integer parameter. The parameter, i, represents
+# 	the index of a cell and the function would return the HTML that goes into the cell at index i. The HTML 
+# 	will be wrapped with a <ul> tag and any content that doesn't fit in the <ul> tag will be hidden
+# 	fucntion setCellFactory()
+
+Dependencies
+
+-jQuery
+-jQuery-ui
+-John Resig's Simple Javascript Inheritance
+
+Target Browsers
+
+-ie (down to ie6)
+-firefox 
+-chrome
+-safari
