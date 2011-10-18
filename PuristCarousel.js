@@ -168,13 +168,14 @@ PuristCarousel = IPuristCarousel.extend({
     var cells_container_x = focus_area_x - ( cells_left * cell_width );
     
     var displayIndexToModelIndex = function(x) { 
-      var begin_at = current_model_index - cells_left
+      var begin_at = current_model_index - cells_left;
       if( begin_at < 0 )
       {
-        begin_at
+       // begin_at
       }
       
-      return ( current_model_index - cells_left + x ) % cells_length ; }
+      return Math.abs( ( current_model_index - cells_left + x ) % cells_length ); 
+    };
     
     var output = "";
     this.displaying_cells = [];
