@@ -1,4 +1,6 @@
-PUMA Landing Page Carousel Gallery
+Purist Carousel Gallery
+
+This doc is very much out of date at this point. This is the original plan before I started coding. Will update soon...
 
 Carousel Gallery: display N images in order horizontally but within a view port that displays only a subset of the images while the rest are hidden from view. The first image starts at the 0 position and if the set slides left, the first image while move out of the view port on the left and hidden images at the right will appear from the right. When the end is reached the first image should appear from the right, creating a never ending cycle. When sliding to the right, the same behavior is maintained in reverse.
 
