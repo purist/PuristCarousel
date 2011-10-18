@@ -173,27 +173,37 @@ PuristCarousel = IPuristCarousel.extend({
     for( var i=0; i<total_rendered; i++ )
     {
       var model_index = displayIndexToModelIndex(i);
-      console.log(model_index);
-      var clone = this.cells[ model_index ].clone();
+      var model = this.cells[ model_index ];
+      var clone = model.clone();
+      model.setDisplayIndex( i );
       clone.setDisplayIndex( i );
+      //model.clone_ref = clone;
       this.displaying_cells.push( clone ); 
       this.cells_container.append( clone.render() );
     }
     
-    var display_index = cells_left;
-    
     this.cells_container_x = cells_container_x;
     this.cells_container.css( 'left', cells_container_x + "px" ); 
     this.cells_container.width( total_rendered * this.options.cell_width );
-    this.current_displaying_cell = this.displaying_cells[ display_index ];
-    this.current_cell.setDisplayIndex( display_index );
+    
+    if( shift >= 0 ) // left -->
+    {
+      //var display_index = cells_left;
+      //this.current_displaying_cell = this.displaying_cells[ display_index ];
+      //this.current_cell.setDisplayIndex( display_index );
+      //return this.current_displaying_cell;
+    }
+    else 
+    {
+      
+    }
+    
   },
   
   // using display indexes
-  animateToCellFromClick: function( next_cell, on_animation_complete ) {
-    var next_display_index = next_cell.getDisplayIndex(); // next cell is a display cell that was clicked on
-    var current_display_index = this.current_displaying_cell.getDisplayIndex(); 
-    var shift = next_display_index - current_display_index;
+  animateToCellFromClick: function( next_cell_model, on_animation_complete ) {
+    
+    var shift = next_cell_model.getDisplayIndex() - this.current_cell.getDisplayIndex();
     this.render( shift ); // currently support only left 
     
     for( var i=0; i<this.displaying_cells.length; i++ ) {
@@ -202,18 +212,18 @@ PuristCarousel = IPuristCarousel.extend({
     }
         
     // fire developer's registered callback
-    this.options.onAnimationBegin( this.current_cell, next_cell );
+    this.options.onAnimationBegin( this.current_cell, next_cell_model );
     
     // THE callback for after animation is complete
     var afterRotate = function() {};
     var this_carousel = this;
     var local_animation_complete = function() {
       this_carousel.prev_cell = this_carousel.current_cell;
-      this_carousel.current_cell = next_cell;
+      this_carousel.current_cell = next_cell_model;
       
-      var di = Math.ceil( this_carousel.options.focus_area_x / this_carousel.options.cell_width ); 
-      this_carousel.current_displaying_cell = this_carousel.displaying_cells[ di ];
-      this_carousel.current_cell.setDisplayIndex( di );
+      //var di = Math.ceil( this_carousel.options.focus_area_x / this_carousel.options.cell_width ); 
+      //this_carousel.current_displaying_cell = this_carousel.displaying_cells[ di ];
+      //this_carousel.current_cell.setDisplayIndex( di );
       
       for( var i=0; i<this_carousel.displaying_cells.length; i++ ) {
         this_carousel.displaying_cells[i].bindHover();

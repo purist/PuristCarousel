@@ -13,6 +13,8 @@ PuristCarouselCell = Class.extend({
     this.model_index = -1;
     this.color = 0;
     this.display_index = -1;
+    this.model_ref = null;
+    
   },
   render: function(){
     $el = $(this.renderer.render());
@@ -29,6 +31,7 @@ PuristCarouselCell = Class.extend({
     clone.cell_adapter = this.cell_adapter;
     clone.model_index = this.model_index;
     clone.color = this.color;
+    clone.model_ref = this;
     return clone;
   },
   setColor: function( color ) {
@@ -61,7 +64,7 @@ PuristCarouselCell = Class.extend({
     
     $cell.unbind('click');
     $cell.click(function(){ 
-      this_cell_obj.cell_adapter.click( this_cell_obj );
+      this_cell_obj.cell_adapter.click( this_cell_obj.model_ref );
     });
   },
   unbindClick: function() {
@@ -73,11 +76,11 @@ PuristCarouselCell = Class.extend({
     
     $cell.unbind('mouseover');
     $cell.mouseover(function(){
-      this_cell_obj.cell_adapter.mouseover( this_cell_obj );
+      this_cell_obj.cell_adapter.mouseover( this_cell_obj.model_ref );
     });
     $cell.unbind('mouseout');
     $cell.mouseout(function(){
-      this_cell_obj.cell_adapter.mouseout( this_cell_obj );
+      this_cell_obj.cell_adapter.mouseout( this_cell_obj.model_ref );
     });
   },
   unbindHover: function() {
