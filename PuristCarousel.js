@@ -167,13 +167,22 @@ PuristCarousel = IPuristCarousel.extend({
     
     var cells_container_x = focus_area_x - ( cells_left * cell_width );
     
-    var displayIndexToModelIndex = function(x) { return Math.abs( ( current_model_index - cells_left + x ) % cells_length ); }
+    var displayIndexToModelIndex = function(x) { 
+      var begin_at = current_model_index - cells_left
+      if( begin_at < 0 )
+      {
+        begin_at
+      }
+      
+      return ( current_model_index - cells_left + x ) % cells_length ; }
     
+    var output = "";
     this.displaying_cells = [];
     for( var i=0; i<total_rendered; i++ )
     {
       var model_index = displayIndexToModelIndex(i);
-      console.log(model_index);
+      //console.log( -6 % 10 );
+      output += model_index + ", ";
       var model = this.cells[ model_index ];
       var clone = model.clone();
       model.setDisplayIndex( i );
@@ -182,6 +191,7 @@ PuristCarousel = IPuristCarousel.extend({
       this.displaying_cells.push( clone ); 
       this.cells_container.append( clone.render() );
     }
+    //console.log( output );
     
     this.cells_container_x = cells_container_x;
     this.cells_container.css( 'left', cells_container_x + "px" ); 
