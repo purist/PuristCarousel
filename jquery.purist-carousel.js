@@ -33,26 +33,6 @@
 
 (function($){  
 
-
-// 
-// var load_count = 0;
-// 
-// $.getScript('Cell.js', function(data, textStatus){
-//    //console.log(data); //data returned
-//    //console.log(textStatus); //success
-//    console.log('Cell.js loaded: ' + textStatus);
-//    load_count++;
-// });
-// 
-// $.getScript('PuristCarousel.js', function(data, textStatus){
-//    //console.log(data); //data returned
-//    //console.log(textStatus); //success
-//    console.log('PuristCarousel.js loaded: ' + textStatus);
-//    load_count++;
-// });
-//   
-// console.log( 'running extension' );
-
 $.fn.puristCarousel = function(options) {  
   
   var $viewport = this.first(); // only build carousel for first matched dom element (not the set)

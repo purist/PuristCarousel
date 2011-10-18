@@ -1,3 +1,36 @@
+/******
+*  = jquery.purist-carousel.js - dynamic slideshow of arbitrary html cells 
+*                                and player controls
+*  
+*  Copyright (C) 2011 Johnny Diligente code@openear.net j.diligente@gmail.com 
+*                     New York City,  United States of America
+*  
+*  This program is free software: you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation, either version 3 of the License, or
+*  (at your option) any later version.
+*  
+*  This program is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*  
+*  You should have received a copy of the GNU General Public License
+*  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*  
+*  ----
+*  
+*  = jquery.purist-carousel.js - dynamic slideshow of arbitrary html cells 
+*                                and player controls
+*  
+*  Author Johnny Diligente code@openear.net j.diligente@gmail.com
+*  
+*  Copyright (C) 2011 Johnny Diligente code@openear.net j.diligente@gmail.com
+*                     New York City,  United States of America
+*                     For Kirshenbaum Bond Senecal, New York City
+*
+******/
+
 var IPuristCarousel;
 var PuristCarousel;
 
@@ -132,14 +165,6 @@ PuristCarousel = IPuristCarousel.extend({
     this.animateToCell( this.cells[prev_i], function(){});
   },
   
-  // findCellIndex: function( cell ) {
-  //     for( var i=0; i<this.cells.length; i++ ) 
-  //       if( this.cells[i] == cell )
-  //         return i;
-  //   
-  //     return -1;
-  //   },
-  
   // shift: # of cells that while eventually shift. render prepares us for the shift.
   render: function( shift ) {
     this.cells_container.html('');
@@ -152,30 +177,21 @@ PuristCarousel = IPuristCarousel.extend({
     var cells_length = this.cells.length;
     var cells_left, cells_right;
     
-    if( shift >= 0 ) // left -->
+    if( shift >= 0 ) // left <--
     {
       cells_left = Math.ceil( focus_area_x / cell_width );
       cells_right = Math.ceil( inverse_focus_area_x / cell_width ) + shift;  
     }
-    else // right <--
+    else // right -->
     {
       cells_left = Math.ceil( focus_area_x / cell_width ) + Math.abs( shift );
       cells_right = Math.ceil( inverse_focus_area_x / cell_width ) ;
     }
     
     var total_rendered = cells_left + cells_right;
-    
     var cells_container_x = focus_area_x - ( cells_left * cell_width );
     
-    var displayIndexToModelIndex = function(x) { 
-      var begin_at = current_model_index - cells_left;
-      if( begin_at < 0 )
-      {
-       // begin_at
-      }
-      
-      return Math.abs( ( current_model_index - cells_left + x ) % cells_length ); 
-    };
+    var displayIndexToModelIndex = function(x) { return purist_modulus( ( current_model_index - cells_left + x ), cells_length ); };
     
     var output = "";
     this.displaying_cells = [];

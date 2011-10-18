@@ -191,3 +191,12 @@ function merge(_default, override)
  
   return merge;
 }
+
+function purist_modulus( x, radix )
+{
+  if( x >= 0 ) // cool beans
+    return x % radix;
+  
+  else // javascript's interpretation of negative modulus sux?
+    return radix + ( x % radix );
+}
