@@ -3,39 +3,17 @@
 <head>
 <title>Purist Carousel Demo</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<link href="style.css" media="screen" rel="stylesheet" type="text/css" />
-<style>
-#carousel {
-	width:1000px;
-	height:100px;
-	background-color:gray;
-	position:relative;
-	overflow:hidden;
-}
-.cell {
-	width:100px;
-	height:100px;
-	float:left;
-	background-color:blue;
-}
-.cells_container {
-	position:relative;
-	left:0px;
-}
-</style>
 </head>
 <body>
 	
-	<div id="carousel"></div>
-	
-	<a href="javascript:void(0);" rel="prev">prev</a>
-	<a href="javascript:void(0);" rel="next">next</a>
-	
+<div id="carousel"></div>
+<a href="javascript:void(0);" rel="prev">prev</a>
+<a href="javascript:void(0);" rel="next">next</a>
+
 <script src="simple-javascript-inheritance.js" type="text/javascript"></script>
 <script src="jquery-1.6.4.min.js" type="text/javascript"></script>
 <script src="jquery-ui-1.8.16.effects-core.min.js" type="text/javascript"></script>
 <script src="libJD.js" type="text/javascript"></script>
-<!-- <script src="jquery-ui.js" type="text/javascript"></script> -->
 <script src="Cell.js" type="text/javascript"></script>
 <script src="PuristCarousel.js" type="text/javascript"></script>
 <script src="jquery.purist-carousel.js" type="text/javascript"></script>
@@ -66,7 +44,7 @@ $(function(){
 		viewport_width: 1000,
 		cell_width:100,
 		cell_height:100,
-		focus_area_x: 230,
+		focus_area_x: 530,
 		easing: 'easeInOutQuart',
 		animation_duration: 750,
 		onCellClick: function( cell ){ },

@@ -48,7 +48,7 @@ var DEFAULT_OPTIONS = {
 	focus_cell_on_click: true, // boolean
 	focus_area_x: 100,
 	easing: 'easeInOutQuart',
-	animation_duration: 750,
+	animation_duration: 400,
 
 	// callbacks
 	onCellClick: function( cell ){},
@@ -75,8 +75,16 @@ PuristCarousel = IPuristCarousel.extend({
   init: function( options ){ 
     this.options = $.extend( {}, DEFAULT_OPTIONS, options );  
     this.cells = [];
-    this.cells_container = $("<div></div>");
-    this.cells_container.addClass("cells_container")
+    
+    var $c = $("<div></div>");
+    $c.addClass("cells_container");
+    $c.css({
+    	position:'relative',
+    	left:'0px'
+    });
+    $c.height(this.options.cell_height);
+    
+    this.cells_container = $c;
     this.current_cell = null;
     this.current_displaying_cell;
     this.prev_cell = null;
@@ -119,9 +127,13 @@ PuristCarousel = IPuristCarousel.extend({
       }
     });
       
+    var randomColor = function () { return '#'+(function(h){return new Array(7-h.length).join("0")+h})((Math.random()*(0xFFFFFF+1)<<0).toString(16)); }
+    
     cell.setAdapter( new MyCellAdapter() );
     cell.setModelIndex( this.cells.length );
     cell.setColor( randomColor() );
+    cell.setWidth( this.options.cell_width );
+    cell.setHeight( this.options.cell_height );
     this.cells.push( cell );
     
     if( this.current_cell == null )

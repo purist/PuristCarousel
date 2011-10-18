@@ -47,12 +47,22 @@ PuristCarouselCell = Class.extend({
     this.color = 0;
     this.display_index = -1;
     this.model_ref = null;
-    
+    this.width = 0;
+    this.height = 0;
   },
-  render: function(){
+  setWidth: function(w) { 
+    this.width = w;
+  },
+  setHeight: function(h) {
+    this.height = h;
+  },
+  render: function(width,height){
     $el = $(this.renderer.render());
     this.el = $el;
     $el.css('background-color', this.color );
+    $el.css('float', 'left' );
+    $el.width( this.width );
+    $el.height( this.height );
     this.bindHover();
     this.bindClick();
     return $el;
@@ -65,6 +75,8 @@ PuristCarouselCell = Class.extend({
     clone.model_index = this.model_index;
     clone.color = this.color;
     clone.model_ref = this;
+    clone.width = this.width;
+    clone.height = this.height;
     return clone;
   },
   setColor: function( color ) {
@@ -135,3 +147,12 @@ PuristCarouselCellRenderer = Class.extend({
 });
 
 })(jQuery);
+
+function purist_modulus( x, radix )
+{
+  if( x >= 0 ) // cool beans
+    return x % radix;
+  
+  else // javascript's interpretation of negative modulus sux?
+    return radix + ( x % radix );
+}

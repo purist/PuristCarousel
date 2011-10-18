@@ -42,7 +42,11 @@ $.fn.puristCarousel = function(options) {
   // configure css for viewport to ensure proper behavior
   $viewport.html('');
   $viewport.append( carousel.getElement() );
-  
+  $viewport.css({
+    	position:'relative',
+    	overflow:'hidden',
+    	width: options.viewport_width
+  })
   return carousel;
 };    
 })(jQuery);
