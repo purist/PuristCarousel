@@ -1,6 +1,10 @@
 Purist Carousel Gallery
 
-This doc is very much out of date. It was the original plan before I started coding. Will update soon...
+This doc is OUT OF DATE. It was the original plan before I started coding. Will update soon...
+
+
+
+
 
 Carousel Gallery: display N images in order horizontally but within a view port that displays only a subset of the images while the rest are hidden from view. The first image starts at the 0 position and if the set slides left, the first image while move out of the view port on the left and hidden images at the right will appear from the right. When the end is reached the first image should appear from the right, creating a never ending cycle. When sliding to the right, the same behavior is maintained in reverse.
 
@@ -25,7 +29,7 @@ Requirements
 -any part of cell-container that exists outside the viewport is hidden
 -cells can be dynamically added
 -when a cell is clicked on, it becomes the active-cell and the cell-container slides 
- 	so that the active-cell is in the focus-area
+	so that the active-cell is in the focus-area
 -focus-area has the same dimensions as a cell
 -focus-area x position does not need to be a multiple of the cell width, and thus the 
 	extreme left or right edge of the viewport may contain partial cells.
@@ -78,10 +82,10 @@ API Requirements
 		function removeCell( i_or_s );
 				
 # -API function that allows a developer to assign the cellFactory function where the cellFactory 
-# 	function is a simple javascript function with one integer parameter. The parameter, i, represents
-# 	the index of a cell and the function would return the HTML that goes into the cell at index i. The HTML 
-# 	will be wrapped with a <ul> tag and any content that doesn't fit in the <ul> tag will be hidden
-# 	fucntion setCellFactory()
+#		function is a simple javascript function with one integer parameter. The parameter, i, represents
+#		the index of a cell and the function would return the HTML that goes into the cell at index i. The HTML 
+#		will be wrapped with a <ul> tag and any content that doesn't fit in the <ul> tag will be hidden
+#		fucntion setCellFactory()
 
 Dependencies
 
