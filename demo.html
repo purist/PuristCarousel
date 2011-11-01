@@ -49,9 +49,9 @@ $(function(){
 		focus_area_x: 239,
 		easing: 'easeInOutQuart',
 		animation_duration: 750,
-		onCellClick: function( cell ){ },
+		onCellClick: function( cell ){ console.log( data[cell.model.model_index].label ) },
 		onAnimationBegin: function( from_cell, to_cell ) { },
-		onAnimationComplete: function( prev_cell, current_cell ) { console.log( data[current_cell.model.model_index].label )},
+		onAnimationComplete: function( prev_cell, current_cell ) { console.log( data[current_cell.model.model_index].label ) },
 		onMouseover: function( cell ) { },
 		onMouseout: function( cell ) { }
 	});
