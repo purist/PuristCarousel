@@ -31,30 +31,33 @@
 *
 ******/
 
+var PuristCarouselCellModel;
+var IPuristCarouselCellRenderer;
+
 (function($){  
 
-$.fn.puristCarousel = function(options) {  
-  
-  var $carousel_el = this.first(); // only build carousel for first matched dom element (not the set)
-  $carousel_el.parent().css({
-    	position:'relative',
-    	overflow:'hidden',
-    	width: options.viewport_width
-  })
+PuristCarouselCellModel = Class.extend({
+	typeName: function() { return "PuristCarouselCellModel"; },
 	
-	return new PuristCarousel( $carousel_el.get(0), options);
-};    
+  init: function( cell_renderer ){
+    this.renderer = cell_renderer;
+    this.model_index = -1;
+  },
+  setAdapter: function (cell_adapter) {
+    this.cell_adapter = cell_adapter;
+  },
+  setModelIndex: function( i ) {
+    this.model_index = i;
+  },
+  getModelIndex: function() {
+    return this.model_index;
+  },
+});
+
+IPuristCarouselCellRenderer = Class.extend({
+	typeName: function() { return "IPuristCarouselCellRenderer"; },
+	
+  render: function() {}
+});
+
 })(jQuery);
-
-
-function purist_modulus( x, radix )
-{
-	if( Math.abs(x) == radix )
-		return 0
-		
-  if( x >= 0 ) // cool beans
-    return x % radix;
-  
-  else // javascript's interpretation of negative modulus sux?
-    return radix + ( x % radix );
-}

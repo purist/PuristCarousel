@@ -31,24 +31,23 @@
 *
 ******/
 
-var PuristCarouselCell;
-var PuristCarouselCellAdapter;
-var PuristCarouselCellRenderer;
+var PuristCarouselCellDisplay;
+var IPuristCarouselCellAdapter;
 
 (function($){  
 
-PuristCarouselCell = Class.extend({
-  init: function( cell_renderer ){
-    this.is_clone = false;
-    this.renderer = cell_renderer;
+PuristCarouselCellDisplay = Class.extend({
+	typeName: function() { return "PuristCarouselCellDisplay"; },
+	
+  init: function( ){
     this.el = null;
-    this.cell_adapter = null;
-    this.model_index = -1;
+    this.display_adapter = null;
     this.color = 0;
     this.display_index = -1;
-    this.model_ref = null;
+    this.model = null;
     this.width = 0;
     this.height = 0;
+		this.renderer = null;
   },
   setWidth: function(w) { 
     this.width = w;
@@ -56,43 +55,49 @@ PuristCarouselCell = Class.extend({
   setHeight: function(h) {
     this.height = h;
   },
-  render: function(width,height){
-    $el = $(this.renderer.render());
-    this.el = $el;
+	setRenderer: function( r ) {
+		this.renderer = r;
+	},
+  loadElement: function( el ) {
+		this.el = el;
+    $el = $(this.el);
     $el.css('background-color', this.color );
     $el.css('float', 'left' );
     $el.width( this.width );
     $el.height( this.height );
     this.bindHover();
     this.bindClick();
-    return $el;
   },
-  clone: function() {
-    var clone = new PuristCarouselCell( this.renderer );
-    clone.is_clone = true;
-    clone.el = this.el
-    clone.cell_adapter = this.cell_adapter;
-    clone.model_index = this.model_index;
-    clone.color = this.color;
-    clone.model_ref = this;
-    clone.width = this.width;
-    clone.height = this.height;
-    return clone;
-  },
+	getElement: function() {
+		return this.el;
+	},
+  // clone: function() {
+  //     var clone = new PuristCarouselCell( this.renderer );
+  //     clone.is_clone = true;
+  //     clone.el = this.el
+  //     clone.cell_adapter = this.cell_adapter;
+  //     clone.model_index = this.model_index;
+  //     clone.color = this.color;
+  //     clone.model_ref = this;
+  //     clone.width = this.width;
+  //     clone.height = this.height;
+  // 		clone.display_index = this.display_index;
+  //     return clone;
+  //   },
   setColor: function( color ) {
     this.color = color;
   },
-  isClone: function() {
-    return this.is_clone;
+  // isClone: function() {
+  //     return this.is_clone;
+  //   },
+  setDisplayAdapter: function (display_adapter) {
+    this.display_adapter = display_adapter;
   },
-  setAdapter: function (cell_adapter) {
-    this.cell_adapter = cell_adapter;
+  setModel: function( m ) {
+    this.model = m;
   },
-  setModelIndex: function( i ) {
-    this.model_index = i;
-  },
-  getModelIndex: function() {
-    return this.model_index;
+  getModel: function() {
+    return this.model;
   },
   setDisplayIndex: function( i ) {
     this.display_index = i;
@@ -104,52 +109,62 @@ PuristCarouselCell = Class.extend({
     this.el.remove();
   },
   bindClick: function() {
-    var $cell = this.el;
-    var this_cell_obj = this;
+    var $cell = $(this.el);
+    var THIS = this;
     
-    $cell.unbind('click');
+    this.unbindClick();
     $cell.click(function(){ 
-      this_cell_obj.cell_adapter.click( this_cell_obj.model_ref );
+      THIS.cell_adapter.click( THIS );
     });
   },
   unbindClick: function() {
-    this.el.unbind('click');
+    $(this.el).unbind('click');
   },
   bindHover: function() {
-    var $cell = this.el;
-    var this_cell_obj = this;
+    var $cell = $(this.el);
+    var THIS = this;
     
-    $cell.unbind('mouseover');
-    $cell.mouseover(function(){
-      this_cell_obj.cell_adapter.mouseover( this_cell_obj.model_ref );
-    });
-    $cell.unbind('mouseout');
-    $cell.mouseout(function(){
-      this_cell_obj.cell_adapter.mouseout( this_cell_obj.model_ref );
-    });
+    // $cell.unbind('mouseover');
+    //     $cell.mouseover(function(){
+    //       THIS.cell_adapter.mouseover( THIS );
+    //     });
+    //     $cell.unbind('mouseout');
+    //     $cell.mouseout(function(){
+    //       THIS.cell_adapter.mouseout( THIS );
+    //     });
+
+		this.unbindHover();
+		
+		$cell.hover( 
+			function(){ THIS.cell_adapter.mouseover( THIS ); } ,
+			function(){ THIS.cell_adapter.mouseout ( THIS ); }
+			);
+		
   },
   unbindHover: function() {
-    this.el.unbind('mouseover');
-    this.el.unbind('mouseout');
+		var $cell = $(this.el);
+    $cell.unbind('mouseover');
+    $cell.unbind('mouseout');
   }
 });
 
-PuristCarouselCellAdapter = Class.extend({
-  click:function( cell ) {},
+IPuristCarouselCellAdapter = Class.extend({
+	typeName: function() { return "IPuristCarouselCellAdapter"; },
+	
+  click:function( display_cell ) {},
   
-  mouseover:function( cell ) {},
+  mouseover:function( display_cell ) {},
   
-  mouseout:function( cell ) {}
-});
-
-PuristCarouselCellRenderer = Class.extend({
-  render: function() {}
+  mouseout:function( display_cell ) {}
 });
 
 })(jQuery);
 
 function purist_modulus( x, radix )
 {
+	if( Math.abs(x) == radix )
+		return 0
+		
   if( x >= 0 ) // cool beans
     return x % radix;
   
