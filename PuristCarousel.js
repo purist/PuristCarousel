@@ -43,8 +43,10 @@ var DEFAULT_OPTIONS = {
 	cell_height: 200, // int
 	next_slide_factor: 3, // int
 	prev_slide_factor: 1, // int
-	// auto_cycle: false, // boolean
-	//	auto_cycle_slide_factor: 5, // int
+	auto_cycle: false, // boolean
+	auto_cycle_slide_factor: 5, // int
+	auto_cycle_interval: 5000, // int
+	auto_cycle_by_model: false, // int
 	pause_auto_cycle_on_hover: false, // boolean
 	focus_cell_on_click: true, // boolean
 	focus_area_x: 100,
@@ -56,23 +58,22 @@ var DEFAULT_OPTIONS = {
 	onAnimationBegin: function( from_display_cell, to_display_cell ) {},
 	onAnimationComplete: function( prev_display_cell, cur_display_cell ) {},
 	onMouseover: function( display_cell ) {},
-	onMouseout: function( display_cell ) {}
+	onMouseout: function( display_cell ) {},
+	onAutoCycleStateChange: function( new_state ) {}
 };
 	
 IPuristCarousel = Class.extend({
 	typeName: function() { return "IPuristCarousel"; },
-
 	addCell: function( model, do_render ) {},
-	// removeCell: function( model ) {},
-	//	 removeCellByModelIndex: function( i ) {},
 	autoCycleEnabled: function( boolean ) {},
- 
-	//getModel: function(i){},
-	//getDisplay: function(i){},
-
 	next: function() {},
 	prev: function() {},
-	animateByShifting: function( shift, on_animation_complete ) {}
+	animateByShifting: function( shift, on_animation_complete ) {},
+	registerModelSelector: function( model_selector ) {},
+});
+
+IModelSelector = Class.extend({
+	nextModel: function( prev_model, cur_model ) {}
 });
 
 PuristCarousel = IPuristCarousel.extend({
@@ -85,7 +86,7 @@ PuristCarousel = IPuristCarousel.extend({
 		this.current_display = null;
 		this.prev_model = null;
 		this.prev_display = null;
-
+		this.model_selector = null;
 		var $c = $(element);
 		$c.addClass("purist_cells_container");
 		$c.css({
@@ -118,23 +119,29 @@ PuristCarousel = IPuristCarousel.extend({
 		}
 	},
 	
-	// removeCell: function( model ) {
-	//		 model.detachFromDOM();
-	//		 this.models.splice( model.getModelIndex(), 1);
-	//		 this.render(0);
-	//	 },
-	//	 
-	//	 removeCellByModelIndex: function( i ) {
-	//		 return this.removeCell( this.models[i] );
-	//	 },
+	registerModelSelector: function( model_selector ) {
+		this.model_selector = model_selector;
+	},
 	
-	// autoCycleEnabled: function( boolean ) { // turn on/off auto animation cycle
-	//		 
-	//	 },
-	
-	// getModel: function( i ) {
-	//		 return this.models[i];
-	//	 },
+	autoCycleEnabled: function( bool ) { // turn on/off auto animation cycle
+		this.cells_container.stopTime( 'carousel-timer' );
+		
+		var THIS = this;
+		
+		if( bool )
+			this.cells_container.everyTime( this.options.auto_cycle_interval, 'carousel-timer', function() {
+				
+				if( THIS.options.auto_cycle_by_model )	
+					THIS.animateToModel( THIS.model_selector.nextModel(THIS.prev_model, THIS.current_model), function(){} );
+				
+				else
+					THIS.animateByShifting( THIS.options.auto_cycle_slide_factor, function(){} );
+					
+			} );
+		
+		// fire developer's registered callback 
+		this.options.onAutoCycleStateChange( bool );
+	},
 	
 	next: function() {
 		this.animateByShifting( this.options.next_slide_factor, function(){});
@@ -158,6 +165,15 @@ PuristCarousel = IPuristCarousel.extend({
 						//
 					});
 			},
+			mouseout:function( display_cell ) 
+			{
+				// fire developer's registered callback
+				this_carousel.options.onMouseout( display_cell );
+				
+				if( this_carousel.options.pause_auto_cycle_on_hover )
+					if( this_carousel.options.auto_cycle )
+						this_carousel.autoCycleEnabled(true);
+			},
 			mouseover:function( display_cell ) 
 			{
 				if( this_carousel.options.pause_auto_cycle_on_hover )
@@ -166,14 +182,13 @@ PuristCarousel = IPuristCarousel.extend({
 				// fire developer's registered callback
 				this_carousel.options.onMouseover( display_cell );
 			},
-			mouseout:function( display_cell ) 
+			mousemove:function( display_cell ) 
 			{
-				// fire developer's registered callback
-				this_carousel.options.onMouseover( display_cell );
-				
 				if( this_carousel.options.pause_auto_cycle_on_hover )
-					if( this_carousel.options.auto_cycle )
-						this_carousel.autoCycleEnabled(true);
+					this_carousel.autoCycleEnabled(false);
+				
+				// fire developer's registered callback
+				this_carousel.options.onMousemove( display_cell );
 			}
 		});
 
@@ -218,8 +233,7 @@ PuristCarousel = IPuristCarousel.extend({
 			display.setDisplayAdapter( this.createDisplayAdapter() );
 			display.setDisplayIndex( i );
 			display.setColor( model.color );
-			display.setWidth( this.options.cell_width );
-			display.setHeight( this.options.cell_height );
+			display.setDimensions( this.options.cell_width, this.options.cell_height );
 			display.setElement( model.renderer.render() );
 			this.display_cells.push( display ); 
 			this.cells_container.append( display.getElement() );
@@ -229,6 +243,9 @@ PuristCarousel = IPuristCarousel.extend({
 		this.cells_container_x = cells_container_x;
 		this.cells_container.css( 'left', cells_container_x + "px" ); 
 		this.cells_container.width( total_rendered * this.options.cell_width );
+		
+		if( this.options.auto_cycle )
+			this.autoCycleEnabled( true );
 	},
 	
 	animateByShifting: function( shift, on_animation_complete ) {
@@ -245,7 +262,6 @@ PuristCarousel = IPuristCarousel.extend({
 		var target_model = target_display.model;
 		
 		// fire developer's registered callback
-		//this.options.onAnimationBegin( this.current_cell, target_cell, this.current_displaying_cell.el, target_display_cell.el );
 		this.options.onAnimationBegin( this.current_display, target_display );
 		
 		var this_carousel = this;
@@ -265,7 +281,6 @@ PuristCarousel = IPuristCarousel.extend({
 			on_animation_complete();
 			
 			// fire developer's registered callback
-			//this_carousel.options.onAnimationComplete( this_carousel.prev_cell, this_carousel.current_cell, cur_displaying_cell.el, target_display_cell.el );
 			this_carousel.options.onAnimationComplete( this_carousel.prev_display, this_carousel.current_display );
 		}
 		
@@ -285,18 +300,20 @@ PuristCarousel = IPuristCarousel.extend({
 			);
 	},
 	
-	// animateToModel: function( next_model, on_animation_complete ) {
-	//		var next_i = 0;
-	//		for( var i=0; i<this.displaying_cells.length; i++ ) 
-	//			if( this.displaying_cells[i].model_ref == next_model )
-	//			{ 
-	//				next_i = i;
-	//				break;
-	//			}
-	//			
-	//		var shift = next_i - this.current_displaying_cell.getDisplayIndex();
-	//		this.animateByShifting( shift, on_animation_complete );
-	//	},
+	animateToModel: function( next_model, on_animation_complete ) {
+		for( var i=0; i<this.display_cells.length; i++ ) 
+			if( this.display_cells[i].getModel() == next_model )
+				break;
+		
+		if( i<this.display_cells.length )
+			this.animateToDisplay( this.display_cells[i], on_animation_complete );
+		else // model isn't on display, we have to add it
+		{
+			var cur_model_index = this.current_display.getModel().getModelIndex();
+			var shift = next_model.getModelIndex() - cur_model_index;
+			this.animateByShifting( shift, on_animation_complete );	
+		}
+	},
 	
 	animateToDisplay: function( next_cell, on_animation_complete ) {
 		var next_i = next_cell.getDisplayIndex();
@@ -304,54 +321,6 @@ PuristCarousel = IPuristCarousel.extend({
 		this.animateByShifting( shift, on_animation_complete );
 	},
 	
-	// using display indexes
-	animateToCellFromClick2: function( next_cell_model, on_animation_complete ) {
-		
-		var shift = next_cell_model.getDisplayIndex() - this.current_cell.getDisplayIndex();
-		this.render( shift ); // currently support only left 
-		
-		for( var i=0; i<this.displaying_cells.length; i++ ) {
-			this.displaying_cells[i].unbindHover();
-			this.displaying_cells[i].unbindClick(); 
-		}
-				
-		// fire developer's registered callback
-		this.options.onAnimationBegin( this.current_cell, next_cell_model, this.current_displaying_cell.el );
-		//target_display_cell.el );
-
-		// THE callback for after animation is complete
-		var this_carousel = this;
-		var local_animation_complete = function() {
-			this_carousel.prev_cell = this_carousel.current_cell;
-			this_carousel.current_cell = next_cell_model;
-			
-			for( var i=0; i<this_carousel.displaying_cells.length; i++ ) {
-				this_carousel.displaying_cells[i].bindHover();
-				this_carousel.displaying_cells[i].bindClick(); 
-			}
-						
-			// fire callback, the one passed into animateToCell
-			on_animation_complete();
-			
-			// fire developer's registered callback
-			this_carousel.options.onAnimationComplete( this_carousel.prev_cell, this_carousel.current_cell );
-		}
-		
-		var animation_target_x;
-		var cells_container_x = this.cells_container_x;
-		var shift_x = shift * this.options.cell_width;
-		
-		animation_target_x = cells_container_x - shift_x;
-		
-		this.cells_container.animate( {'left': animation_target_x + 'px'}, 
-				{
-					duration: this_carousel.options.animation_duration,
-					easing: this_carousel.options.easing,
-					complete: local_animation_complete,
-					queue: true
-				}
-			);
-	}
 	
 });
 

@@ -48,10 +48,8 @@ PuristCarouselCellDisplay = Class.extend({
 		this.width = 0;
 		this.height = 0;
 	},
-	setWidth: function(w) { 
+	setDimensions: function(w,h) { 
 		this.width = w;
-	},
-	setHeight: function(h) {
 		this.height = h;
 	},
 	setElement: function( el ) {
@@ -67,25 +65,9 @@ PuristCarouselCellDisplay = Class.extend({
 	getElement: function() {
 		return this.el;
 	},
-	// clone: function() {
-	//		 var clone = new PuristCarouselCell( this.renderer );
-	//		 clone.is_clone = true;
-	//		 clone.el = this.el
-	//		 clone.cell_adapter = this.cell_adapter;
-	//		 clone.model_index = this.model_index;
-	//		 clone.color = this.color;
-	//		 clone.model_ref = this;
-	//		 clone.width = this.width;
-	//		 clone.height = this.height;
-	//		clone.display_index = this.display_index;
-	//		 return clone;
-	//	 },
 	setColor: function( color ) {
 		this.color = color;
 	},
-	// isClone: function() {
-	//		 return this.is_clone;
-	//	 },
 	setDisplayAdapter: function (display_adapter) {
 		this.display_adapter = display_adapter;
 	},
@@ -120,27 +102,23 @@ PuristCarouselCellDisplay = Class.extend({
 		var $cell = $(this.el);
 		var THIS = this;
 		
-		// $cell.unbind('mouseover');
-		//		 $cell.mouseover(function(){
-		//			 THIS.cell_adapter.mouseover( THIS );
-		//		 });
-		//		 $cell.unbind('mouseout');
-		//		 $cell.mouseout(function(){
-		//			 THIS.cell_adapter.mouseout( THIS );
-		//		 });
-
 		this.unbindHover();
 		
-		$cell.hover( 
-			function(){ THIS.display_adapter.mouseover( THIS ); } ,
-			function(){ THIS.display_adapter.mouseout ( THIS ); }
-			);
-		
+		$cell.mousemove(function(){
+			THIS.display_adapter.mousemove( THIS );	
+		});
+		$cell.mouseover(function(){
+			THIS.display_adapter.mouseover( THIS );	
+		});
+		$cell.mouseout(function(){
+			THIS.display_adapter.mouseout( THIS );
+		});
 	},
 	unbindHover: function() {
 		var $cell = $(this.el);
 		$cell.unbind('mouseover');
 		$cell.unbind('mouseout');
+		$cell.unbind('mousemove');
 	}
 });
 
@@ -151,7 +129,9 @@ IPuristCarouselDisplayAdapter = Class.extend({
 	
 	mouseover:function( display_cell ) {},
 	
-	mouseout:function( display_cell ) {}
+	mouseout:function( display_cell ) {},
+	
+	mousemove:function( display_cell ) {}
 });
 
 })(jQuery);
